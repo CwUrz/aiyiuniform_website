@@ -1,6 +1,6 @@
 import { Navigation } from './components/Navigation';
 import { Hero } from './components/Hero';
-import { HighSchools } from './components/HighSchools';
+import { HighSchools } from './components/SeniorHighSchools';
 import { JuniorHighSchools } from './components/JuniorHighSchools';
 import { ProductCategories } from './components/ProductCategories';
 import { About } from './components/About';
