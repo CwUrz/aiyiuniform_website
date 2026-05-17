@@ -1,10 +1,9 @@
 import { Shirt, Backpack } from 'lucide-react';
-
-import { JacketIcon } from '@/components/icons/JacketIcon';
-import { LongSleeveIcon } from '@/components/icons/LongSleeveIcon';
-import { ShortsIcon } from '@/components/icons/ShortsIcon';
-import { SkirtIcon } from '@/components/icons/SkirtIcon';
-import { PantsIcon } from '@/components/icons/PantsIcon';
+import { JacketIcon } from '../components/icons/JacketIcon';
+import { LongSleeveIcon } from '../components/icons/LongSleeveIcon';
+import { ShortsIcon } from '../components/icons/ShortsIcon';
+import { SkirtIcon } from '../components/icons/SkirtIcon';
+import { PantsIcon } from '../components/icons/PantsIcon';
 
 export const uniformProducts = [
   { name: '制服外套', price: 'NT$ 1700', icon: JacketIcon },
