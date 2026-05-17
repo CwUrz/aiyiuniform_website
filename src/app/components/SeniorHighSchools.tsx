@@ -6,7 +6,7 @@ import { SchoolProductsModal } from './SchoolProductsModal';
 import {
   seniorHighSchools,
   seniorHighSchoolProductsMap,
-} from '@/data/seniorHighSchools';
+} from '../data/seniorHighSchools';
 
 export function HighSchools() {
   const [selectedSchool, setSelectedSchool] =
