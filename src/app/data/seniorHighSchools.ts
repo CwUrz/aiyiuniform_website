@@ -40,14 +40,15 @@ const removeSweater = (products: any[]) =>
 const hoodieProduct = {
   name: '帽踢',
   price: 'NT$ 950',
-  icon: sportsProducts[0].icon,
+  icon: sportsProducts[5].icon,
 };
 
-// 女生限定毛衣
+// 毛衣
 const girlsSweaterProduct = {
-  name: '毛衣（僅限女生）',
+  name: '毛衣',
+  note: '僅限女生',
   price: 'NT$ 700',
-  icon: uniformProducts[0].icon,
+  icon: uniformProducts[6].icon,
 };
 
 // 基礎高中制服（沒有制服短褲）
