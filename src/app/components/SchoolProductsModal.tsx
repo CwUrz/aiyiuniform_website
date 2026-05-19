@@ -1,11 +1,10 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import { ProductIcon } from './ProductIcon';
 
 interface Product {
   name: string;
   price: string;
-  icon: any;
+  icon: string;
 }
 
 interface SchoolProductsModalProps {
@@ -15,16 +14,26 @@ interface SchoolProductsModalProps {
   products: Product[];
 }
 
-export function SchoolProductsModal({ isOpen, onClose, schoolName, products }: SchoolProductsModalProps) {
+export function SchoolProductsModal({
+  isOpen,
+  onClose,
+  schoolName,
+  products,
+}: SchoolProductsModalProps) {
   return (
-    <Dialog.Root open={isOpen} onOpenChange={onClose}>
+    <Dialog.Root
+      open={isOpen}
+      onOpenChange={onClose}
+    >
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
+
         <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-[90vw] max-w-4xl max-h-[85vh] overflow-y-auto z-50">
           <div className="flex items-start justify-between mb-6">
             <Dialog.Title className="text-2xl text-gray-900">
               {schoolName} - 商品清單
             </Dialog.Title>
+
             <Dialog.Close asChild>
               <button
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -41,12 +50,22 @@ export function SchoolProductsModal({ isOpen, onClose, schoolName, products }: S
                 key={index}
                 className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-gray-300 transition-colors"
               >
-                <div className="aspect-square">
-                  <ProductIcon icon={product.icon} />
+                <div className="aspect-square bg-white p-4">
+                  <img
+                    src={product.icon}
+                    alt={product.name}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
+
                 <div className="p-3">
-                  <h4 className="text-sm text-gray-900 mb-1">{product.name}</h4>
-                  <p className="text-xs text-gray-600">{product.price}</p>
+                  <h4 className="text-sm text-gray-900 mb-1">
+                    {product.name}
+                  </h4>
+
+                  <p className="text-xs text-gray-600">
+                    {product.price}
+                  </p>
                 </div>
               </div>
             ))}
