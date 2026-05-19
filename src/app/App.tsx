@@ -6,6 +6,7 @@ import { ProductCategories } from './components/ProductCategories';
 import { About } from './components/About';
 import { OrderSection } from './components/OrderSection';
 import { Footer } from './components/Footer';
+import { SizeGuide } from './components/SizeGuide';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <HighSchools />
       <JuniorHighSchools />
       <ProductCategories />
+      <SizeGuide />
       <About />
       <OrderSection />
       <Footer />

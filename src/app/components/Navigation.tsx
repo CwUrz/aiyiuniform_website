@@ -16,16 +16,16 @@ export function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <a href="#home" className="text-gray-700 hover:text-gray-900 transition-colors">
-              Home
+              首頁
             </a>
             <a href="#products" className="text-gray-700 hover:text-gray-900 transition-colors">
-              Products
+              商品資訊
             </a>
             <a href="#order" className="text-gray-700 hover:text-gray-900 transition-colors">
-              Order
+              我要訂購
             </a>
             <a href="#contact" className="text-gray-700 hover:text-gray-900 transition-colors">
-              Contact
+              聯絡我們
             </a>
           </div>
 

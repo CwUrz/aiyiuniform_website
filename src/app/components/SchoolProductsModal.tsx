@@ -73,7 +73,7 @@ export function SchoolProductsModal({
 
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-600">
-              如需訂購，請點選上方「我要訂購」按鈕前往表單
+              如需訂購，請點選「我要訂購」按鈕前往專屬訂購網站
             </p>
           </div>
         </Dialog.Content>
