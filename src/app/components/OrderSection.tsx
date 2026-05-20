@@ -14,7 +14,7 @@ export function OrderSection() {
             </div>
 
             <a
-              href="https://keen-alpaca-015517.netlify.app/"
+              href="/制服店線上訂購系統_包好.html"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 px-8 py-4 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-colors shadow-lg text-lg group"

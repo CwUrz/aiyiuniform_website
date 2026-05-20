@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>制服店 線上訂購系統</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f5f4f0;--surface:#fff;--border:#e5e3dc;--border2:#d0cec5;
+  --text:#1a1917;--text2:#6b6960;--text3:#a8a59c;
+  --accent:#1a1917;--accent-fg:#fff;
+  --green-bg:#eaf3de;--green:#3b6d11;--green-border:#c0dd97;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:'Noto Sans TC',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-size:15px;font-weight:700;}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:1040px;margin:1rem auto;padding:0 1.5rem;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;}
+.stat-label{font-size:11px;color:var(--text3);margin-bottom:3px;}
+.stat-val{font-size:18px;font-weight:700;}
+
+.layout{display:grid;grid-template-columns:1fr 340px;gap:1rem;max-width:1040px;margin:0 auto;padding:0 1.5rem 2rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;}
+.card:last-child{margin-bottom:0;}
+.sec-title{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin-bottom:.875rem;}
+
+.select-wrap{position:relative;}
+.select-wrap::after{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--text3);pointer-events:none;}
+select{width:100%;height:42px;padding:0 36px 0 12px;font-size:14px;font-family:inherit;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);appearance:none;cursor:pointer;}
+select:focus{outline:none;border-color:var(--text);}
+
+/* Gender buttons */
+.gender-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.gender-btn{height:48px;border:1.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s;}
+.gender-btn:hover{background:var(--bg);}
+.gender-btn.male.active{background:#eff6ff;border-color:#3b82f6;color:#1d4ed8;}
+.gender-btn.female.active{background:#fdf2f8;border-color:#ec4899;color:#be185d;}
+
+/* Gender indicator tag */
+.gender-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:500;margin-left:6px;}
+.gender-tag.m{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
+.gender-tag.f{background:#fdf2f8;color:#be185d;border:1px solid #fbcfe8;}
+.gender-tag.n{background:var(--bg);color:var(--text2);border:1px solid var(--border2);}
+
+.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem;}
+.prod-btn{border:1px solid var(--border2);border-radius:var(--radius-sm);padding:.875rem .5rem;background:var(--surface);cursor:pointer;text-align:center;transition:all .12s;font-family:inherit;width:100%;}
+.prod-btn:hover{border-color:var(--text);background:var(--bg);}
+.prod-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.prod-price{font-size:11px;color:var(--text2);}
+.no-selection{text-align:center;padding:1.5rem;color:var(--text3);font-size:13px;grid-column:1/-1;}
+
+/* Modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-start;justify-content:center;padding-top:5vh;overflow-y:auto;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:var(--radius);padding:1.5rem;width:92%;max-width:480px;margin-bottom:5vh;}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:.2rem;}
+.modal-sub{font-size:12px;color:var(--text2);margin-bottom:1.25rem;}
+.modal-sec{margin-bottom:1.125rem;}
+.size-label-row{display:flex;align-items:center;gap:8px;margin-bottom:.5rem;}
+.size-label{font-size:12px;font-weight:600;color:var(--text2);}
+.required-badge{font-size:10px;color:#b91c1c;background:#fff5f5;border:1px solid #fca5a5;border-radius:999px;padding:1px 7px;font-weight:500;}
+.filled-badge{font-size:10px;color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);border-radius:999px;padding:1px 7px;font-weight:500;}
+.size-grid{display:grid;gap:6px;}
+.g2{grid-template-columns:repeat(2,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g5{grid-template-columns:repeat(5,1fr);}
+.size-btn{height:38px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;transition:all .12s;padding:0 2px;}
+.size-btn:hover{background:var(--bg);}
+.size-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);}
+.size-divider{height:1px;background:var(--border);margin:.875rem 0;}
+.qty-row{display:flex;align-items:center;gap:12px;}
+.qty-btn{width:40px;height:40px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qty-btn:hover{background:var(--bg);}
+.qty-num{font-size:20px;font-weight:700;min-width:36px;text-align:center;}
+.modal-footer{display:flex;gap:8px;margin-top:1.25rem;}
+.btn-cancel{flex:1;height:46px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text2);font-size:14px;font-family:inherit;cursor:pointer;}
+.btn-add{flex:2;height:46px;border:none;border-radius:var(--radius-sm);background:var(--accent);color:var(--accent-fg);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;}
+.btn-add:disabled{opacity:.3;cursor:not-allowed;}
+
+/* Cart */
+.cart-panel{display:flex;flex-direction:column;position:sticky;top:66px;height:fit-content;}
+.cart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;}
+.cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 0;gap:8px;color:var(--text3);font-size:13px;}
+.cart-icon{width:36px;height:36px;border:1px dashed var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.cart-item{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);gap:8px;}
+.cart-item:last-child{border-bottom:none;}
+.ci-name{font-size:13px;font-weight:600;}
+.ci-detail{font-size:11px;color:var(--text2);margin-top:2px;}
+.ci-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.ci-price{font-size:13px;font-weight:600;}
+.ci-del{font-size:11px;color:var(--text3);cursor:pointer;background:none;border:none;font-family:inherit;padding:0;}
+.ci-del:hover{color:#b91c1c;}
+.sec-block{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);}
+.block-label{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+.btn-group{display:flex;gap:6px;flex-wrap:wrap;}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.btn-toggle{flex:1;height:36px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text2);font-size:12px;font-family:inherit;font-weight:500;cursor:pointer;transition:all .12s;white-space:nowrap;padding:0 6px;}
+.btn-toggle:hover{background:var(--bg);}
+.btn-toggle.active{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);}
+.totals{margin-top:1rem;padding-top:.875rem;border-top:1px solid var(--border2);}
+.t-row{display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:6px;}
+.t-row.big{font-size:19px;font-weight:700;color:var(--text);margin-top:8px;margin-bottom:0;}
+.btn-checkout{width:100%;height:48px;margin-top:1rem;border:none;border-radius:var(--radius-sm);background:var(--accent);color:var(--accent-fg);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:opacity .15s;}
+.btn-checkout:hover:not(:disabled){opacity:.85;}
+.btn-checkout:disabled{opacity:.3;cursor:not-allowed;}
+.toast{display:none;margin-top:8px;padding:9px 12px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);border-radius:var(--radius-sm);font-size:12px;font-weight:500;}
+.records-box{margin-top:.875rem;padding-top:.875rem;border-top:1px solid var(--border);}
+.rec-title{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin-bottom:.625rem;}
+.rec-row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px;color:var(--text2);}
+.rec-row:last-child{border-bottom:none;}
+.rec-id{font-weight:600;color:var(--text);font-size:10px;}
+.rec-amt{font-weight:600;color:var(--text);}
+@media(max-width:700px){
+  .layout{grid-template-columns:1fr;padding:0 1rem 2rem;}
+  .product-grid{grid-template-columns:repeat(2,1fr);}
+  .cart-panel{position:static;}
+}
+
+.cust-row{margin-bottom:.625rem;}
+.cust-row:last-child{margin-bottom:0;}
+.cust-label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500;}
+.req{color:#b91c1c;}
+.cust-input{width:100%;height:36px;padding:0 10px;font-size:13px;font-family:inherit;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);}
+.cust-input:focus{outline:none;border-color:var(--text);}
+.cust-hint{font-size:10px;color:var(--text3);margin-top:3px;}
+.time-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div><div class="logo">制服店 線上訂購</div><div class="logo-sub">客戶訂單系統</div></div>
+  <div style="font-size:12px;color:var(--text2);" id="clock"></div>
+</div>
+
+<div class="layout">
+  <div>
+    <!-- Step 1 -->
+    <div class="card">
+      <div class="sec-title">Step 1　選學校</div>
+      <div class="select-wrap">
+        <select id="sel-school" onchange="onSchool(this.value)">
+          <option value="">— 請選擇學校 —</option>
+          <optgroup label="── 高中職 ──">
+            <option>羅東高中</option><option>宜蘭高中</option><option>蘭陽女中</option>
+            <option>羅東高工</option><option>羅東高商</option><option>頭城家商</option>
+            <option>宜蘭高商</option><option>蘇澳海事</option><option>聖母護校</option>
+          </optgroup>
+          <optgroup label="── 國中 ──">
+            <option>羅東國中</option><option>國華國中</option><option>東光國中</option>
+            <option>文化國中</option><option>五結國中</option><option>冬山國中</option>
+            <option>三星國中</option><option>順安國中</option><option>利澤國中</option>
+            <option>興中國中</option><option>蘇澳國中</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="card">
+      <div class="sec-title">Step 2　選性別</div>
+      <div class="gender-btns">
+        <button class="gender-btn male" id="btn-male" onclick="onGender('男',this)">♂　男生</button>
+        <button class="gender-btn female" id="btn-female" onclick="onGender('女',this)">♀　女生</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="card">
+      <div class="sec-title">Step 3　選商品（點擊加入）</div>
+      <div class="product-grid" id="prod-grid">
+        <div class="no-selection">請先選擇學校與性別</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-panel">
+    <div class="cart-card">
+      <div class="sec-title">購物清單</div>
+      <div id="cart-body">
+        <div class="cart-empty">
+          <div class="cart-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3h10M2 7h6M2 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          尚未加入商品
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="block-label">Step 4　客戶資料</div>
+        <div class="cust-row">
+          <label class="cust-label">姓名 <span class="req">*</span></label>
+          <input type="text" class="cust-input" id="cust-name" placeholder="王小明" oninput="updateCheckout()"/>
+        </div>
+        <div class="cust-row">
+          <label class="cust-label">電話 <span class="req">*</span></label>
+          <input type="tel" class="cust-input" id="cust-phone" placeholder="0912-345-678" oninput="updateCheckout()"/>
+        </div>
+        <div class="cust-row">
+          <label class="cust-label">取貨日期 <span class="req">*</span></label>
+          <input type="date" class="cust-input" id="cust-date" onchange="updateCheckout()"/>
+          <div class="cust-hint" id="date-hint">一個月內可選</div>
+        </div>
+        <div class="cust-row">
+          <label class="cust-label">取貨時段 <span class="req">*</span></label>
+          <div class="time-grid">
+            <button class="btn-toggle" onclick="setTimeSlot('早',this)">早　<span style="opacity:.6;font-size:10px;">9–12</span></button>
+            <button class="btn-toggle" onclick="setTimeSlot('中',this)">中　<span style="opacity:.6;font-size:10px;">12–17</span></button>
+            <button class="btn-toggle" onclick="setTimeSlot('晚',this)">晚　<span style="opacity:.6;font-size:10px;">17–21</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="totals" id="totals-area" style="display:none;">
+        <div class="t-row"><span>原價</span><span id="t-sub" style="text-decoration:line-through;color:var(--text3);">—</span></div>
+        <div class="t-row big"><span>8折後</span><span id="t-total">—</span></div>
+      </div>
+      <button class="btn-checkout" id="btn-checkout" onclick="doCheckout()" disabled>送出訂單</button>
+      <div class="toast" id="toast"></div>
+      <div id="records-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="closeOutside(event)">
+  <div class="modal">
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-sub" id="m-sub"></div>
+    <div id="m-content"></div>
+    <div class="modal-sec">
+      <div class="size-label-row"><span class="size-label">數量</span></div>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <div class="qty-num" id="m-qty">1</div>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-add" id="btn-add" onclick="addToCart()" disabled>加入清單</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 部署 → 網頁應用程式 → 複製結尾為 /exec 的網址（不是 library 網址）
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPQY8GhEL_2v4DbWfAlUsSp6o_RlJranGS4GlT7R6o86zSGXjdLTT2bCpoL_oFulcz/exec';
+var isSubmitting = false;
+
+var WAISTS = ['25/26','27/28','29/30','31/32','33/34','35/36','37/38'];
+var SHIRT  = ['9','10','11','12','13','14','15','16','17'];
+var SPORT  = ['36','38','40','42','44','46','48','50'];
+var SPORT_SHORT = ['36','38','40','42','44','46','48','50','52'];
+var SPORT_LONG  = ['34x34','36x36','38x36','38x38','38x40','38x42','40x38','40x40','40x42','40x44','42x38','42x42','44x44','46x46','48x48','50x50','52x52'];
+var JACKET = ['S','M','L','XL','2L','3L','4L','5L','6L','7L'];
+var SWEATER= ['S','M','L','XL','2L','3L','4L'];
+var LONG_L = ['36長','38長','40長','42長'];
+var SHORT_L= ['長12','長14','長16'];
+var SKIRT_L= ['裙長6','裙長7'];
+
+// gender: 'M'=男, 'F'=女, 'N'=不限(男女都顯示)
+// type: 'simple' | 'dual'
+var CATALOG = {
+  // ── 制服類 ──
+  '制服外套':     {price:1700, gender:'N', type:'simple', grid:'g5', sizes:JACKET},
+  '制服外套_男':  {price:1700, gender:'M', type:'simple', grid:'g5', sizes:JACKET, label:'制服外套', femaleKey:'制服外套_女'},
+  '制服外套_女':  {price:1700, gender:'F', type:'simple', grid:'g5', sizes:JACKET, label:'制服外套'},
+  '制服短袖':     {price:650,  gender:'N', type:'simple', grid:'g5', sizes:SHIRT},
+  '制服短袖_男':  {price:650,  gender:'M', type:'simple', grid:'g5', sizes:SHIRT, label:'制服短袖', femaleKey:'制服短袖_女'},
+  '制服短袖_女':  {price:650,  gender:'F', type:'simple', grid:'g5', sizes:SHIRT, label:'制服短袖'},
+  '制服長袖':     {price:700,  gender:'N', type:'simple', grid:'g5', sizes:SHIRT},
+  '制服長袖_男':  {price:700,  gender:'M', type:'simple', grid:'g5', sizes:SHIRT, label:'制服長袖', femaleKey:'制服長袖_女'},
+  '制服長袖_女':  {price:700,  gender:'F', type:'simple', grid:'g5', sizes:SHIRT, label:'制服長袖'},
+  '制服短褲':     {price:700,  gender:'M', type:'dual', step1Label:'長度', step1:SHORT_L, step2Label:'腰圍', step2:WAISTS},
+  '制服裙子':     {price:700,  gender:'F', type:'dual', step1Label:'長度', step1:SKIRT_L, step2Label:'腰圍', step2:WAISTS},
+  '制服長褲_男':  {price:800,  gender:'M', type:'dual', step1Label:'長度', step1:LONG_L, step2Label:'腰圍', step2:WAISTS, label:'制服長褲', femaleKey:'制服長褲_女'},
+  '制服長褲_女':  {price:800,  gender:'F', type:'dual', step1Label:'長度', step1:LONG_L, step2Label:'腰圍', step2:WAISTS, label:'制服長褲'},
+  // ── 體育類 ──
+  '體育外套':     {price:950,  gender:'N', type:'simple', grid:'g4', sizes:SPORT},
+  '體育外套_男':  {price:950,  gender:'M', type:'simple', grid:'g4', sizes:SPORT, label:'體育外套', femaleKey:'體育外套_女'},
+  '體育外套_女':  {price:950,  gender:'F', type:'simple', grid:'g4', sizes:SPORT, label:'體育外套'},
+  '體育短袖':     {price:500,  gender:'N', type:'simple', grid:'g4', sizes:SPORT},
+  '體育短袖_男':  {price:500,  gender:'M', type:'simple', grid:'g4', sizes:SPORT, label:'體育短袖', femaleKey:'體育短袖_女'},
+  '體育短袖_女':  {price:500,  gender:'F', type:'simple', grid:'g4', sizes:SPORT, label:'體育短袖'},
+  '體育長袖':     {price:600,  gender:'N', type:'simple', grid:'g4', sizes:SPORT},
+  '體育長袖_男':  {price:600,  gender:'M', type:'simple', grid:'g4', sizes:SPORT, label:'體育長袖', femaleKey:'體育長袖_女'},
+  '體育長袖_女':  {price:600,  gender:'F', type:'simple', grid:'g4', sizes:SPORT, label:'體育長袖'},
+  '體育短褲':     {price:500,  gender:'N', type:'simple', grid:'g5', sizes:SPORT_SHORT},
+  '體育短褲_男':  {price:500,  gender:'M', type:'simple', grid:'g5', sizes:SPORT_SHORT, label:'體育短褲', femaleKey:'體育短褲_女'},
+  '體育短褲_女':  {price:500,  gender:'F', type:'simple', grid:'g5', sizes:SPORT_SHORT, label:'體育短褲'},
+  '體育長褲':     {price:650,  gender:'N', type:'conditional', step1Label:'主尺寸', step1:['34','36','38','40','42','44','46','48','50','52'], step2Label:'腰圍', step2Map:{'38':{waists:['36','38','40','42'],optional:false},'40':{waists:['38','40','42','44'],optional:false},'42':{waists:['38'],optional:true}}},
+  '體育長褲_男':  {price:650,  gender:'M', type:'conditional', step1Label:'主尺寸', step1:['34','36','38','40','42','44','46','48','50','52'], step2Label:'腰圍', step2Map:{'38':{waists:['36','38','40','42'],optional:false},'40':{waists:['38','40','42','44'],optional:false},'42':{waists:['38'],optional:true}}, label:'體育長褲', femaleKey:'體育長褲_女'},
+  '體育長褲_女':  {price:650,  gender:'F', type:'conditional', step1Label:'主尺寸', step1:['34','36','38','40','42','44','46','48','50','52'], step2Label:'腰圍', step2Map:{'38':{waists:['36','38','40','42'],optional:false},'40':{waists:['38','40','42','44'],optional:false},'42':{waists:['38'],optional:true}}, label:'體育長褲'},
+  // ── 配件類 ──
+  '毛衣':         {price:700,  gender:'F', type:'simple', grid:'g4', sizes:SWEATER},
+  '腰帶':         {price:300,  gender:'N', type:'nosize'},
+  '書包':         {price:750,  gender:'N', type:'nosize'},
+  '帽T':          {price:700,  gender:'N', type:'simple', grid:'g5', sizes:['38','40','42','44','46']},
+};
+
+// 依截圖表格定義各學校商品
+// M=有分男女的男版, F=只限女, N=不限, MF=有分男女(會自動展開男版+女版)
+// 格式: [商品key, ...]
+// 有分男女的: 制服短袖, 制服長袖 → 用 '制服短袖'(男) + '制服短袖_女'(女)
+//            制服長褲 → '制服長褲'(男) + '制服長褲_女'(女)
+// 只限女: 制服短褲, 制服裙子
+// 不限: 體育系列, 制服外套, 毛衣, 腰帶...
+
+var SCHOOL_PRODS = {
+  // ══ 高中職 ══
+  // 羅東高中: 制短袖✓ 制長袖✓ 裙子(F) 制長褲✓ 體外套× 體短袖× 體長袖× 體短褲× 體長褲× 書包× 
+  '羅東高中': ['制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服裙子','制服長褲_男','制服長褲_女','體育外套','體育短袖','體育長袖','體育短褲','體育長褲','書包','腰帶'],
+  // 宜蘭高中: 同羅東高中 + 帽T
+  '宜蘭高中': ['制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服裙子','制服長褲_男','制服長褲_女','體育外套','體育短袖','體育長袖','體育短褲','體育長褲','帽T','書包','腰帶'],
+  // 蘭陽女中: 全女校 (制短袖_女 制長袖_女 裙子 制長褲_女 體外套_女 體短袖_女 體長袖_女 體短褲_女 體長褲_女 帽T 毛衣 書包)
+  '蘭陽女中': ['制服短袖_女','制服長袖_女','制服裙子','制服長褲_女','體育外套_女','體育短袖_女','體育長袖_女','體育短褲_女','體育長褲_女','帽T','毛衣','書包','腰帶'],
+  // 羅東高工: 制外套× 制短袖× 制長袖× 制長褲✓ 體短袖× 體短褲× 體長褲× 書包×
+  '羅東高工': ['制服外套','制服短袖','制服長袖','制服長褲_男','制服長褲_女','體育短袖','體育短褲','體育長褲','書包','腰帶'],
+  // 羅東高商: 制外套✓ 制短袖✓ 制長袖✓ 裙子(F) 制長褲✓ 體外套✓ 體短袖✓ 體長袖✓ 體短褲× 體長褲× 毛衣 書包
+  '羅東高商': ['制服外套_男','制服外套_女','制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服裙子','制服長褲_男','制服長褲_女','體育外套_男','體育外套_女','體育短袖_男','體育短袖_女','體育長袖_男','體育長袖_女','體育短褲','體育長褲','毛衣','書包','腰帶'],
+  // 頭城家商: 制短袖✓ 制長袖✓ 裙子(F) 制長褲✓ 體外套✓ 體短袖✓ 體長袖✓ 體短褲✓ 體長褲✓ 書包
+  '頭城家商': ['制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服裙子','制服長褲_男','制服長褲_女','體育外套_男','體育外套_女','體育短袖_男','體育短袖_女','體育長袖_男','體育長袖_女','體育短褲_男','體育短褲_女','體育長褲_男','體育長褲_女','書包','腰帶'],
+  // 宜蘭高商: 制短袖✓ 制長袖✓ 裙子(F) 制長褲✓ 體外套× 體短袖× 體長袖× 體短褲× 體長褲× 帽T 毛衣 書包
+  '宜蘭高商': ['制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服裙子','制服長褲_男','制服長褲_女','體育外套','體育短袖','體育長袖','體育短褲','體育長褲','帽T','毛衣','書包','腰帶'],
+  // 蘇澳海事: 制外套× 制短袖✓ 制長袖✓ 裙子(F) 制長褲✓ 體短袖✓ 體長袖✓ 體短褲× 體長褲× 書包
+  '蘇澳海事': ['制服外套','制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服裙子','制服長褲_男','制服長褲_女','體育短袖_男','體育短袖_女','體育長袖_男','體育長袖_女','體育短褲','體育長褲','書包','腰帶'],
+  // 聖母護校: 制短袖✓ 制長袖✓ 制長褲✓ 體外套✓ 體短袖✓ 體長袖✓ 體短褲✓ 體長褲✓ 毛衣 書包
+  '聖母護校': ['制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服長褲_男','制服長褲_女','體育外套_男','體育外套_女','體育短袖_男','體育短袖_女','體育長袖_男','體育長袖_女','體育短褲_男','體育短褲_女','體育長褲_男','體育長褲_女','毛衣','書包','腰帶'],
+
+  // ══ 國中 ══
+  // 羅東國中: 制外套× 制短袖✓ 制長袖✓ 制短褲× 裙子(F) 制長褲✓ 體短袖✓ 體長袖✓ 體短褲× 體長褲× 書包
+  '羅東國中': ['制服外套','制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服短褲','制服裙子','制服長褲_男','制服長褲_女','體育短袖_男','體育短袖_女','體育長袖_男','體育長袖_女','體育短褲','體育長褲','書包','腰帶'],
+  // 國華國中: 制外套× 制短袖✓ 制長袖× 制短褲× 裙子(F) 制長褲✓ 體短袖✓ 體長袖✓ 體短褲× 體長褲× 書包
+  '國華國中': ['制服外套','制服短袖_男','制服短袖_女','制服長袖','制服短褲','制服裙子','制服長褲_男','制服長褲_女','體育短袖_男','體育短袖_女','體育長袖_男','體育長袖_女','體育短褲','體育長褲','書包','腰帶'],
+  // 東光國中: 制短袖✓ 制長袖✓ 制短褲× 裙子(F) 制長褲✓ 體外套✓ 體短袖✓ 體長袖✓ 體短褲✓ 體長褲✓ 書包
+  '東光國中': ['制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服短褲','制服裙子','制服長褲_男','制服長褲_女','體育外套_男','體育外套_女','體育短袖_男','體育短袖_女','體育長袖_男','體育長袖_女','體育短褲_男','體育短褲_女','體育長褲_男','體育長褲_女','書包','腰帶'],
+  // 文化國中: 制外套× 制短袖✓ 制長袖✓ 制短褲× 裙子(F) 制長褲✓ 體外套× 體短袖× 體長袖× 體短褲× 體長褲× 書包
+  '文化國中': ['制服外套','制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服短褲','制服裙子','制服長褲_男','制服長褲_女','體育外套','體育短袖','體育長袖','體育短褲','體育長褲','書包','腰帶'],
+  // 五結國中: 制短袖✓ 制長袖✓ 制短褲× 裙子(F) 制長褲✓ 體外套× 體短袖× 體長袖× 體短褲× 體長褲× 書包
+  '五結國中': ['制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服短褲','制服裙子','制服長褲_男','制服長褲_女','體育外套','體育短袖','體育長袖','體育短褲','體育長褲','書包','腰帶'],
+  // 冬山國中: 制外套× 制短袖✓ 制長袖✓ 制短褲× 裙子(F) 制長褲✓ 體外套× 體短袖✓ 體長袖✓ 體短褲✓ 體長褲× 書包
+  '冬山國中': ['制服外套','制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服短褲','制服裙子','制服長褲_男','制服長褲_女','體育外套','體育短袖_男','體育短袖_女','體育長袖_男','體育長袖_女','體育短褲_男','體育短褲_女','體育長褲','書包','腰帶'],
+  // 三星國中: 制外套× 制短袖✓ 制長袖✓ 制短褲× 裙子(F) 制長褲✓ (無體育) 書包
+  '三星國中': ['制服外套','制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服短褲','制服裙子','制服長褲_男','制服長褲_女','書包','腰帶'],
+  // 順安國中: 制外套× 制短袖✓ 制長袖✓ 制短褲× 裙子(F) 制長褲✓ 體外套× 體短袖× 體長袖× 體短褲× 體長褲× 書包
+  '順安國中': ['制服外套','制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服短褲','制服裙子','制服長褲_男','制服長褲_女','體育外套','體育短袖','體育長袖','體育短褲','體育長褲','書包','腰帶'],
+  // 利澤國中: 制外套× 制短袖× 制長袖× 制短褲× 裙子(F) 制長褲✓ (無體育) 書包
+  '利澤國中': ['制服外套','制服短袖','制服長袖','制服短褲','制服裙子','制服長褲_男','制服長褲_女','書包','腰帶'],
+  // 興中國中: 制外套× 制短袖✓ 制長袖✓ 制短褲× 裙子(F) 制長褲✓ 體外套× 體短袖× 體長袖× 體短褲× 體長褲× 書包
+  '興中國中': ['制服外套','制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服短褲','制服裙子','制服長褲_男','制服長褲_女','體育外套','體育短袖','體育長袖','體育短褲','體育長褲','書包','腰帶'],
+  // 蘇澳國中: 制外套× 制短袖✓ 制長袖✓ 制短褲× 裙子(F) 制長褲✓ 體短袖✓ 體長袖✓ 體短褲✓ 體長褲✓ 書包
+  '蘇澳國中': ['制服外套','制服短袖_男','制服短袖_女','制服長袖_男','制服長袖_女','制服短褲','制服裙子','制服長褲_男','制服長褲_女','體育短袖_男','體育短袖_女','體育長袖_男','體育長袖_女','體育短褲_男','體育短褲_女','體育長褲_男','體育長褲_女','書包','腰帶'],
+};
+
+var FEMALE_ONLY_SCHOOLS = {'蘭陽女中':true};
+
+var school = '', gender = '';
+var cart = [], discount = 0.8, discLabel = '0.8', timeSlot = '', customerName = '', customerPhone = '', pickupDate = '';
+var records = [], orderCount = 1;
+var mState = {product:'', prodGender:'', size:'', qty:1, step1Val:'', step2Val:''};
+
+function fmtDate(d){var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return y+'/'+m+'/'+day;}
+function fmtDateTime(d){var h=String(d.getHours()).padStart(2,'0'),mi=String(d.getMinutes()).padStart(2,'0'),s=String(d.getSeconds()).padStart(2,'0');return fmtDate(d)+' '+h+':'+mi+':'+s;}
+
+function tick(){
+  var now=new Date(), days=['日','一','二','三','四','五','六'];
+  document.getElementById('clock').textContent=fmtDate(now)+'（'+days[now.getDay()]+'）'+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+}
+tick(); setInterval(tick,30000);
+
+// 設定取貨日期範圍：今天 ~ 一個月後
+(function initDateRange(){
+  var today=new Date();
+  var max=new Date(today);
+  max.setMonth(max.getMonth()+1);
+  function pad(n){return String(n).padStart(2,'0');}
+  function iso(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+  var dateInput=document.getElementById('cust-date');
+  if(dateInput){
+    dateInput.min=iso(today);
+    dateInput.max=iso(max);
+  }
+})();
+
+function onSchool(v){ school=v; renderProducts(); }
+
+function onGender(v,btn){
+  gender=v;
+  document.querySelectorAll('.gender-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderProducts();
+}
+
+function getDisplayName(key){
+  var c=CATALOG[key];
+  if(c && c.label) return c.label;
+  return key.replace('_女','');
+}
+
+function getProdGender(key){
+  var c=CATALOG[key];
+  if(!c) return 'N';
+  return c.gender;
+}
+
+function shouldShow(key){
+  // 蘭陽女中是女校，選男生時不顯示任何商品
+  if(FEMALE_ONLY_SCHOOLS[school] && gender==='男') return false;
+  var g=getProdGender(key);
+  if(g==='N') return true;
+  if(g==='M') return gender==='男';
+  if(g==='F') return gender==='女';
+  return true;
+}
+
+function renderProducts(){
+  var grid=document.getElementById('prod-grid');
+  grid.innerHTML='';
+  if(!school || !gender){
+    grid.innerHTML='<div class="no-selection">請先選擇學校與性別</div>';
+    return;
+  }
+  var prods=(SCHOOL_PRODS[school]||[]).filter(shouldShow);
+  if(!prods.length){
+    grid.innerHTML='<div class="no-selection">此學校無對應商品</div>';
+    return;
+  }
+  prods.forEach(function(key){
+    var c=CATALOG[key];
+    var btn=document.createElement('button');
+    btn.className='prod-btn';
+    var name=getDisplayName(key);
+    btn.innerHTML='<div class="prod-name">'+name+'</div><div class="prod-price">NT$'+c.price.toLocaleString()+'</div>';
+    btn.onclick=function(){openModal(key);};
+    grid.appendChild(btn);
+  });
+}
+
+function openModal(key){
+  var c=CATALOG[key];
+  var name=getDisplayName(key);
+  var prodGender=getProdGender(key);
+  mState={product:key, prodGender:prodGender, size:'', qty:1, step1Val:'', step2Val:''};
+  document.getElementById('m-title').textContent=name;
+  var genderLabel = prodGender==='M'?'男生' : prodGender==='F'?'女生' : '';
+  document.getElementById('m-sub').textContent=school+(genderLabel?' ‧ '+genderLabel:'')+' — NT$'+c.price.toLocaleString();
+  document.getElementById('m-qty').textContent='1';
+  document.getElementById('btn-add').disabled=true;
+
+  var modalContent=document.getElementById('m-content');
+  if(c.type==='nosize'){
+    // 沒有尺寸的商品（皮帶、書包）：直接可加入
+    modalContent.innerHTML='';
+    mState.size='—';
+    document.getElementById('btn-add').disabled=false;
+  } else if(c.type==='simple'){
+    var html='<div class="modal-sec"><div class="size-label-row"><span class="size-label">選尺寸</span><span class="required-badge">必填</span></div><div class="size-grid '+c.grid+'" id="sg-main">';
+    c.sizes.forEach(function(s){html+='<button class="size-btn" data-val="'+s+'">'+s+'</button>';});
+    html+='</div></div>';
+    modalContent.innerHTML=html;
+    document.querySelectorAll('#sg-main .size-btn').forEach(function(b){
+      b.onclick=function(){pickSimple(this,this.getAttribute('data-val'));};
+    });
+  } else if(c.type==='conditional'){
+    // 體育長褲：兩階段同時顯示，腰圍一開始全部 disabled
+    // 收集所有可能的腰圍（聯集）
+    var allWaists=[];
+    Object.keys(c.step2Map).forEach(function(k){
+      c.step2Map[k].waists.forEach(function(w){
+        if(allWaists.indexOf(w)===-1) allWaists.push(w);
+      });
+    });
+    allWaists.sort(function(a,b){return parseInt(a)-parseInt(b);});
+
+    var html='<div class="modal-sec">';
+    html+='<div class="size-label-row"><span class="size-label">2-1　'+c.step1Label+'</span><span class="required-badge" id="badge-s1">必填</span></div>';
+    html+='<div class="size-grid g5" id="sg-step1">';
+    c.step1.forEach(function(s){html+='<button class="size-btn" data-val="'+s+'">'+s+'</button>';});
+    html+='</div>';
+    html+='<div class="size-divider"></div>';
+    html+='<div class="size-label-row"><span class="size-label">2-2　'+c.step2Label+'</span><span id="badge-s2" class="required-badge">請先選主尺寸</span></div>';
+    html+='<div class="size-grid g5" id="sg-step2">';
+    allWaists.forEach(function(w){html+='<button class="size-btn" data-val="'+w+'" disabled style="opacity:.3;cursor:not-allowed;">'+w+'</button>';});
+    html+='</div>';
+    html+='</div>';
+    modalContent.innerHTML=html;
+    document.querySelectorAll('#sg-step1 .size-btn').forEach(function(b){
+      b.onclick=function(){pickCondStep1(this,this.getAttribute('data-val'));};
+    });
+  } else if(c.type==='dual'){
+    var html='<div class="modal-sec">';
+    html+='<div class="size-label-row"><span class="size-label">2-1　'+c.step1Label+'</span><span class="required-badge" id="badge-s1">必填</span></div>';
+    html+='<div class="size-grid g3" id="sg-step1">';
+    c.step1.forEach(function(s){html+='<button class="size-btn" data-val="'+s+'">'+s+'</button>';});
+    html+='</div><div class="size-divider"></div>';
+    html+='<div class="size-label-row"><span class="size-label">2-2　'+c.step2Label+'</span><span class="required-badge" id="badge-s2">必填</span></div>';
+    html+='<div class="size-grid g3" id="sg-step2">';
+    c.step2.forEach(function(w){html+='<button class="size-btn" data-val="'+w+'">'+w+'</button>';});
+    html+='</div></div>';
+    modalContent.innerHTML=html;
+    document.querySelectorAll('#sg-step1 .size-btn').forEach(function(b){b.onclick=function(){pickStep1(this,this.getAttribute('data-val'));};});
+    document.querySelectorAll('#sg-step2 .size-btn').forEach(function(b){b.onclick=function(){pickStep2(this,this.getAttribute('data-val'));};});
+  }
+  document.getElementById('overlay').classList.add('open');
+}
+
+// Conditional step1 (體育長褲)
+function pickCondStep1(btn,v){
+  mState.step1Val=v; mState.step2Val=''; mState.size='';
+  document.querySelectorAll('#sg-step1 .size-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var b1=document.getElementById('badge-s1');
+  if(b1){b1.className='filled-badge';b1.textContent='✓ 已選';}
+
+  var c=CATALOG[mState.product];
+  var step2=c.step2Map[v];
+  var b2=document.getElementById('badge-s2');
+  var waistBtns=document.querySelectorAll('#sg-step2 .size-btn');
+
+  // 重置所有腰圍按鈕：清除 active，預設 disabled
+  waistBtns.forEach(function(b){
+    b.classList.remove('active');
+    b.disabled=true;
+    b.style.opacity='.3';
+    b.style.cursor='not-allowed';
+    b.onclick=null;
+  });
+
+  if(step2){
+    // 此主尺寸有腰圍：啟用對應的腰圍按鈕
+    waistBtns.forEach(function(b){
+      var w=b.getAttribute('data-val');
+      if(step2.waists.indexOf(w)!==-1){
+        b.disabled=false;
+        b.style.opacity='1';
+        b.style.cursor='pointer';
+        b.onclick=function(){pickCondStep2(this,this.getAttribute('data-val'));};
+      }
+    });
+    if(step2.optional){
+      // 可選可不選
+      b2.className='required-badge';
+      b2.textContent='選填';
+      b2.style.background='#fff8e1';
+      b2.style.color='#8a6000';
+      b2.style.borderColor='#fcd34d';
+      mState.size=v;
+      document.getElementById('btn-add').disabled=false;
+    } else {
+      b2.className='required-badge';
+      b2.textContent='必填';
+      b2.style.background='';
+      b2.style.color='';
+      b2.style.borderColor='';
+      document.getElementById('btn-add').disabled=true;
+    }
+  } else {
+    // 此主尺寸沒有腰圍：直接可加入，腰圍欄保持全部 disabled
+    b2.className='required-badge';
+    b2.textContent='無腰圍';
+    b2.style.background='#f5f4f0';
+    b2.style.color='#6b6960';
+    b2.style.borderColor='#d0cec5';
+    mState.size=v;
+    document.getElementById('btn-add').disabled=false;
+  }
+}
+
+function pickCondStep2(btn,w){
+  mState.step2Val=w;
+  document.querySelectorAll('#sg-step2 .size-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var b2=document.getElementById('badge-s2');
+  if(b2){b2.className='filled-badge';b2.textContent='✓ 已選';b2.style.background='';b2.style.color='';b2.style.borderColor='';}
+  mState.size=mState.step1Val+' 腰'+w;
+  document.getElementById('btn-add').disabled=false;
+}
+
+function pickSimple(btn,s){
+  mState.size=s;
+  document.querySelectorAll('#sg-main .size-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('btn-add').disabled=false;
+}
+function pickStep1(btn,v){
+  mState.step1Val=v; mState.step2Val=''; mState.size='';
+  document.querySelectorAll('#sg-step1 .size-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var b1=document.getElementById('badge-s1');
+  if(b1){b1.className='filled-badge';b1.textContent='✓ 已選';}
+  document.getElementById('btn-add').disabled=true;
+}
+function pickStep2(btn,w){
+  mState.step2Val=w;
+  document.querySelectorAll('#sg-step2 .size-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var b2=document.getElementById('badge-s2');
+  if(b2){b2.className='filled-badge';b2.textContent='✓ 已選';}
+  if(mState.step1Val && mState.step2Val){
+    mState.size=mState.step1Val+' 腰'+mState.step2Val;
+    document.getElementById('btn-add').disabled=false;
+  }
+}
+function changeQty(d){mState.qty=Math.max(1,mState.qty+d);document.getElementById('m-qty').textContent=mState.qty;}
+function closeModal(){document.getElementById('overlay').classList.remove('open');}
+function closeOutside(e){if(e.target===document.getElementById('overlay'))closeModal();}
+
+function addToCart(){
+  var c=CATALOG[mState.product];
+  var name=getDisplayName(mState.product);
+  var g=mState.prodGender;
+  cart.push({id:Date.now(), school:school, gender:gender, product:name, prodGender:g, size:mState.size, qty:mState.qty, unitPrice:c.price});
+  closeModal();
+  renderCart();
+}
+function removeItem(id){cart=cart.filter(function(i){return i.id!==id;});renderCart();}
+
+function genderTag(g){
+  if(g==='M') return '<span class="gender-tag m">男</span>';
+  if(g==='F') return '<span class="gender-tag f">女</span>';
+  return '';
+}
+
+function renderCart(){
+  var body=document.getElementById('cart-body');
+  var totArea=document.getElementById('totals-area');
+  var btn=document.getElementById('btn-checkout');
+  if(!cart.length){
+    body.innerHTML='<div class="cart-empty"><div class="cart-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3h10M2 7h6M2 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>尚未加入商品</div>';
+    totArea.style.display='none'; btn.disabled=true; btn.textContent='結帳'; return;
+  }
+  var html='';
+  cart.forEach(function(i){
+    html+='<div class="cart-item"><div>';
+    html+='<div class="ci-name">'+i.product+genderTag(i.prodGender)+'</div>';
+    html+='<div class="ci-detail">'+i.school+'　'+i.size+'　×'+i.qty+'</div>';
+    html+='</div><div class="ci-right"><div class="ci-price">NT$'+(i.unitPrice*i.qty).toLocaleString()+'</div>';
+    html+='<button class="ci-del" onclick="removeItem('+i.id+')">✕ 移除</button></div></div>';
+  });
+  body.innerHTML=html;
+  var sub=cart.reduce(function(s,i){return s+i.unitPrice*i.qty;},0);
+  var total=Math.round(sub*discount);
+  var discAmt=sub-total;
+  totArea.style.display='block';
+  document.getElementById('t-sub').textContent='NT$'+sub.toLocaleString();
+  document.getElementById('t-total').textContent='NT$'+total.toLocaleString();
+  var ready=customerName && customerPhone && pickupDate && timeSlot;
+  btn.disabled=!ready;
+  btn.textContent=ready ? ('送出訂單　NT$'+total.toLocaleString()) : '請填寫客戶資料';
+}
+
+
+function setTimeSlot(v, btn) {
+  timeSlot = v;
+  document.querySelectorAll('.time-grid .btn-toggle').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  updateCheckout();
+}
+
+function updateCheckout() {
+  customerName = document.getElementById('cust-name').value.trim();
+  customerPhone = document.getElementById('cust-phone').value.trim();
+  pickupDate = document.getElementById('cust-date').value;
+  renderCart();
+}
+
+function genId(){return 'ORD-'+fmtDate(new Date()).replace(/\//g,'')+'-'+String(orderCount++).padStart(3,'0');}
+
+function doCheckout(){
+  if(!cart.length) return;
+  if(!customerName || !customerPhone || !pickupDate || !timeSlot){
+    alert('請填寫完整客戶資料：姓名、電話、取貨日期、取貨時段');
+    return;
+  }
+  if(isSubmitting) return;
+  isSubmitting=true;
+
+  var checkoutBtn=document.getElementById('btn-checkout');
+  checkoutBtn.disabled=true;
+  checkoutBtn.textContent='送出中...';
+
+  var sub=cart.reduce(function(s,i){return s+i.unitPrice*i.qty;},0);
+  var total=Math.round(sub*discount);
+  var orderId=genId();
+  var nowStr=fmtDateTime(new Date());
+
+  var orderItems=cart.map(function(item){
+    return {
+      school:item.school,
+      gender:item.gender,
+      product:item.product,
+      prodGender:item.prodGender==='M'?'男':item.prodGender==='F'?'女':'不限',
+      size:item.size,
+      qty:item.qty,
+      unitPrice:item.unitPrice
+    };
+  });
+
+  var itemsText=cart.map(function(i){
+    return i.product+'('+i.size+'×'+i.qty+')';
+  }).join('、');
+
+  records.push({orderId:orderId, datetime:nowStr, customerName:customerName, customerPhone:customerPhone, pickupDate:pickupDate, timeSlot:timeSlot, school:school, gender:gender, items:itemsText, subtotal:sub, discount:discLabel, total:total, status:'待處理'});
+
+  fetch(APPS_SCRIPT_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({
+      orderId:orderId,
+      datetime:nowStr,
+      customerName:customerName,
+      customerPhone:customerPhone,
+      pickupDate:pickupDate,
+      timeSlot:timeSlot,
+      school:school,
+      gender:gender,
+      status:'待處理',
+      items:orderItems
+    })
+  }).catch(function(){});
+
+  var savedName=customerName, savedTotal=total, savedOrder=orderId;
+  cart=[]; timeSlot=''; customerName=''; customerPhone=''; pickupDate='';
+  document.querySelectorAll('.time-grid .btn-toggle').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('cust-name').value='';
+  document.getElementById('cust-phone').value='';
+  document.getElementById('cust-date').value='';
+  renderCart(); updateStats();
+
+  var toast=document.getElementById('toast');
+  toast.style.display='block';
+  toast.textContent='✓ 訂單送出　'+savedOrder+'　'+savedName+'　NT$'+savedTotal.toLocaleString();
+  setTimeout(function(){toast.style.display='none';},5000);
+  renderRecords();
+
+  isSubmitting=false;
+  checkoutBtn.disabled=false;
+  updateCheckout();
+}
+
+function renderRecords(){
+  // 顧客端不顯示歷史訂單紀錄
+}
+
+function updateStats(){
+  // 顧客端不顯示後台統計，保留空函式避免呼叫出錯
+}
+</script>
+</body>
+</html>
