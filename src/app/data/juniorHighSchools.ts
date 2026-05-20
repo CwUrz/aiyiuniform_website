@@ -18,28 +18,12 @@ export const juniorHighSchools = [
   '蘇澳國中',
 ];
 
-// 國中制服商品（移除毛衣）
-
-const juniorUniformProducts =
-  uniformProducts.filter(
-    (product) => product.name !== '毛衣'
-  );
-
-// 國中體育商品（移除帽踢）
-
-const juniorSportsProducts =
-  sportsProducts.filter(
-    (product) => product.name !== '帽踢'
-  );
-
-// 國中基礎商品
-
 const productsForJunior = [
-  ...juniorUniformProducts,
-  ...juniorSportsProducts,
+  ...uniformProducts,
+  ...sportsProducts,
 ];
 
-// 工具函式
+// ===== 工具函式 =====
 
 const removeUniformJacket = (
   products: typeof productsForJunior
@@ -62,6 +46,10 @@ const removeAllSportsProducts = (
     (product) =>
       !product.name.startsWith('體育')
   );
+
+
+
+// ===== 國中商品配置 =====
 
 export const juniorHighSchoolProductsMap = {
   // 只有制服外套，沒有體育外套
@@ -86,6 +74,8 @@ export const juniorHighSchoolProductsMap = {
     backpackProduct,
   ],
 
+
+
   // 只有制服，沒有任何體育商品
 
   利澤國中: [
@@ -98,12 +88,16 @@ export const juniorHighSchoolProductsMap = {
     backpackProduct,
   ],
 
+
+
   // 同時有制服外套與體育外套
 
   冬山國中: [
     ...productsForJunior,
     backpackProduct,
   ],
+
+
 
   // 沒有制服外套，只有體育外套
 
