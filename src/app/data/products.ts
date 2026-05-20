@@ -11,118 +11,191 @@ import PantsIcon from '../components/icons/pants.png';
 import UniPantsIcon from '../components/icons/trousers.png';
 import SweaterIcon from '../components/icons/sweater.png';
 import HoodieIcon from '../components/icons/hood.png';
-import BeltIcon from '../components/icons/belt.png';
 
+export interface SizeInfo {
+  label: string;
+  values: string[];
+}
 
+export interface Product {
+  name: string;
+  price: string;
+  icon: string;
+  sizes: SizeInfo[];
+}
 
-// ===== 制服商品 =====
-
-export const uniformProducts = [
+export const uniformProducts: Product[] = [
   {
     name: '制服外套',
     price: 'NT$ 1700',
     icon: JacketIcon,
+    sizes: [
+      {
+        label: '尺碼',
+        values: ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'],
+      },
+    ],
   },
 
   {
     name: '制服短袖',
     price: 'NT$ 650',
     icon: Shirt,
+    sizes: [
+      {
+        label: '尺碼',
+        values: ['9', '10', '11', '12', '13', '14', '15', '16', '17'],
+      },
+    ],
   },
 
   {
     name: '制服長袖',
     price: 'NT$ 700',
     icon: LongSleeveIcon,
+    sizes: [
+      {
+        label: '尺碼',
+        values: ['9', '10', '11', '12', '13', '14', '15', '16', '17'],
+      },
+    ],
   },
 
   {
     name: '制服短褲',
     price: 'NT$ 700',
     icon: UniShortsIcon,
+    sizes: [
+      {
+        label: '腰圍',
+        values: ['24', '26', '28', '30', '32', '34', '36'],
+      },
+    ],
   },
 
   {
     name: '制服裙子',
     price: 'NT$ 700',
     icon: SkirtIcon,
+    sizes: [
+      {
+        label: '腰圍',
+        values: ['24', '26', '28', '30', '32', '34'],
+      },
+    ],
   },
 
   {
     name: '制服長褲',
     price: 'NT$ 800',
     icon: UniPantsIcon,
+    sizes: [
+      {
+        label: '腰圍',
+        values: ['28', '30', '32', '34', '36', '38'],
+      },
+      {
+        label: '褲長',
+        values: ['36長', '38長', '40長', '42長'],
+      },
+    ],
   },
 ];
 
-
-
-// ===== 毛衣 =====
-
-export const sweaterProduct = {
+export const sweaterProduct: Product = {
   name: '毛衣',
   price: 'NT$ 700',
   icon: SweaterIcon,
+  sizes: [
+    {
+      label: '尺碼',
+      values: ['S', 'M', 'L', 'XL', '2XL'],
+    },
+  ],
 };
 
-
-
-// ===== 體育商品 =====
-
-export const sportsProducts = [
+export const sportsProducts: Product[] = [
   {
     name: '體育外套',
     price: 'NT$ 950',
     icon: JacketIcon,
+    sizes: [
+      {
+        label: '尺碼',
+        values: ['36', '38', '40', '42', '44', '46', '48'],
+      },
+    ],
   },
 
   {
     name: '體育短袖',
     price: 'NT$ 500',
     icon: TShirt,
+    sizes: [
+      {
+        label: '尺碼',
+        values: ['36', '38', '40', '42', '44', '46', '48'],
+      },
+    ],
   },
 
   {
     name: '體育短褲',
     price: 'NT$ 500',
     icon: ShortsIcon,
+    sizes: [
+      {
+        label: '尺碼',
+        values: ['36', '38', '40', '42', '44', '46'],
+      },
+    ],
   },
 
   {
     name: '體育長袖',
     price: 'NT$ 600',
     icon: PELongSleeveIcon,
+    sizes: [
+      {
+        label: '尺碼',
+        values: ['36', '38', '40', '42', '44', '46', '48'],
+      },
+    ],
   },
 
   {
     name: '體育長褲',
     price: 'NT$ 650',
     icon: PantsIcon,
+    sizes: [
+      {
+        label: '尺碼',
+        values: ['36', '38', '40', '42', '44', '46', '48'],
+      },
+    ],
   },
 ];
 
-
-
-// ===== 帽踢 =====
-
-export const hoodieProduct = {
+export const hoodieProduct: Product = {
   name: '帽踢',
   price: 'NT$ 700',
   icon: HoodieIcon,
+  sizes: [
+    {
+      label: '尺碼',
+      values: ['S', 'M', 'L', 'XL', '2XL'],
+    },
+  ],
 };
 
-
-
-// ===== 書包 =====
-
-export const backpackProduct = {
+export const backpackProduct: Product = {
   name: '書包',
   price: 'NT$ 750',
   icon: Backpack,
-};
-
-export const beltProduct = {
-  name: '腰帶',
-  price: 'NT$ 300',
-  icon: BeltIcon,
+  sizes: [
+    {
+      label: '尺寸',
+      values: ['均一尺寸'],
+    },
+  ],
 };

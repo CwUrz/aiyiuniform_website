@@ -24,6 +24,9 @@ export function Navigation() {
             <a href="#order" className="text-gray-700 hover:text-gray-900 transition-colors">
               我要訂購
             </a>
+            <a href="#size-guide" className="text-gray-700 hover:text-gray-900 transition-colors">
+              尺寸建議
+            </a>
             <a href="#contact" className="text-gray-700 hover:text-gray-900 transition-colors">
               聯絡我們
             </a>

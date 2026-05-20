@@ -55,7 +55,7 @@ export function SizeModal({ isOpen, onClose, productName, sizes }: SizeModalProp
 
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-600 text-center">
-              如需尺寸建議，請聯繫我們的專業團隊
+              如需尺寸建議，請參考尺寸建議表，或聯繫我們的專業團隊
             </p>
           </div>
         </Dialog.Content>
