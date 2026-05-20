@@ -11,6 +11,7 @@ import PantsIcon from '../components/icons/pants.png';
 import UniPantsIcon from '../components/icons/trousers.png';
 import SweaterIcon from '../components/icons/sweater.png';
 import HoodieIcon from '../components/icons/hood.png';
+import BeltIcon from '../components/icons/belt.png';
 
 export interface SizeInfo {
   label: string;
@@ -192,6 +193,18 @@ export const backpackProduct: Product = {
   name: '書包',
   price: 'NT$ 750',
   icon: Backpack,
+  sizes: [
+    {
+      label: '尺寸',
+      values: ['均一尺寸'],
+    },
+  ],
+};
+
+export const beltProduct: Product = {
+  name: '腰帶',
+  price: 'NT$ 300',
+  icon: BeltIcon,
   sizes: [
     {
       label: '尺寸',
