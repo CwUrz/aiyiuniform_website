@@ -82,9 +82,14 @@ export function Footer() {
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
 
-                <span className="text-gray-400 text-sm">
+                <a
+                  href="https://maps.app.goo.gl/6mXoMEfmBjcV6GLo7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
                   宜蘭縣羅東鎮中正路 123 號
-                </span>
+                </a>
               </div>
             </div>
           </div>

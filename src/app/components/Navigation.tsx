@@ -50,28 +50,35 @@ export function Navigation() {
                 className="text-gray-700 hover:text-gray-900 transition-colors py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Home
+                首頁
               </a>
               <a
                 href="#products"
                 className="text-gray-700 hover:text-gray-900 transition-colors py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Products
+                商品資訊
               </a>
               <a
                 href="#order"
                 className="text-gray-700 hover:text-gray-900 transition-colors py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Order
+                我要訂購
+              </a>
+              <a
+                href="#size-guide"
+                className="text-gray-700 hover:text-gray-900 transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                尺寸建議
               </a>
               <a
                 href="#contact"
                 className="text-gray-700 hover:text-gray-900 transition-colors py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Contact
+                聯絡我們
               </a>
             </div>
           </div>
